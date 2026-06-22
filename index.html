@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YUMO Crypto Dashboard - 21 Haziran 2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<style>
+:root{--bg:#0a0e1a;--card:#111827;--card-border:#1f2937;--text:#e5e7eb;--text-muted:#9ca3af;--accent:#6366f1;--accent2:#8b5cf6;--bull:#22c55e;--bear:#ef4444;--neutral:#f59e0b}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.container{max-width:1400px;margin:0 auto;padding:20px}
+.header{text-align:center;padding:30px 0;border-bottom:1px solid var(--card-border);margin-bottom:30px}
+.header h1{font-size:2.5rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.header .subtitle{color:var(--text-muted);margin-top:8px;font-size:1.1rem}
+.header .date{color:var(--text-muted);font-size:.9rem;margin-top:4px}
+.grid{display:grid;gap:20px}
+.grid-4{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.grid-3{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.grid-2{grid-template-columns:repeat(auto-fit,minmax(400px,1fr))}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:16px;padding:24px;transition:transform .2s}
+.card:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card-title{font-size:1.1rem;font-weight:600;color:var(--text)}
+.card-value{font-size:2rem;font-weight:700;margin:8px 0}
+.card-change{font-size:.9rem;font-weight:600;padding:4px 8px;border-radius:6px;display:inline-block}
+.change-up{background:rgba(34,197,94,.15);color:var(--bull)}
+.change-down{background:rgba(239,68,68,.15);color:var(--bear)}
+.badge{font-size:.75rem;padding:3px 8px;border-radius:4px;background:var(--card-border);color:var(--text-muted);font-weight:500}
+.section-title{font-size:1.5rem;font-weight:700;margin:40px 0 20px;padding-left:16px;border-left:4px solid var(--accent)}
+.fear-greed-container{text-align:center;padding:20px}
+.fear-greed-value{font-size:4rem;font-weight:800;margin:10px 0}
+.fear-greed-label{font-size:1.2rem;color:var(--text-muted);margin-bottom:8px}
+.fear-greed-extreme-fear{color:#ef4444}
+.fear-greed-fear{color:#f97316}
+.fear-greed-neutral{color:#f59e0b}
+.fear-greed-greed{color:#84cc16}
+.fear-greed-extreme-greed{color:#22c55e}
+.chart-container{position:relative;height:300px;margin-top:16px}
+.chart-container-large{height:400px}
+.table{width:100%;border-collapse:collapse;margin-top:16px}
+.table th,.table td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--card-border)}
+.table th{color:var(--text-muted);font-weight:600;font-size:.85rem;text-transform:uppercase}
+.table td{font-size:.9rem}
+.table tr:hover{background:rgba(99,102,241,.05)}
+.img-chart{width:100%;border-radius:12px;margin-top:16px}
+.insight-card{background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(139,92,246,.1));border:1px solid rgba(99,102,241,.3);padding:20px;border-radius:12px;margin:12px 0}
+.insight-title{font-weight:700;color:var(--accent);margin-bottom:8px}
+.insight-text{color:var(--text-muted);font-size:.9rem;line-height:1.6}
+.tag{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.75rem;font-weight:600;margin:4px 4px 4px 0}
+.tag-bull{background:rgba(34,197,94,.15);color:var(--bull)}
+.tag-bear{background:rgba(239,68,68,.15);color:var(--bear)}
+.tag-info{background:rgba(99,102,241,.15);color:var(--accent)}
+.metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:16px}
+.metric-item{background:rgba(255,255,255,.03);padding:16px;border-radius:12px;text-align:center}
+.metric-label{color:var(--text-muted);font-size:.8rem;margin-bottom:8px;text-transform:uppercase}
+.metric-value{font-size:1.4rem;font-weight:700}
+.nav{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+.nav-btn{padding:10px 20px;border-radius:8px;border:1px solid var(--card-border);background:var(--card);color:var(--text);cursor:pointer;transition:all .2s;font-size:.9rem}
+.nav-btn:hover,.nav-btn.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.section{display:none}
+.section.active{display:block}
+footer{text-align:center;padding:40px 0;color:var(--text-muted);font-size:.85rem;border-top:1px solid var(--card-border);margin-top:60px}
+@media(max-width:768px){.grid-4,.grid-3,.grid-2{grid-template-columns:1fr}.header h1{font-size:1.8rem}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<div class="header">
+<h1>YUMO Crypto Dashboard</h1>
+<div class="subtitle">Kripto Piyasa Makro-Mikro Analiz</div>
+<div class="date">21 Haziran 2026 | Veriler gerçek zamanlı</div>
+</div>
+
+<div class="nav">
+<button class="nav-btn active" onclick="showSection('overview')">Genel Bakış</button>
+<button class="nav-btn" onclick="showSection('technical')">Teknik Analiz</button>
+<button class="nav-btn" onclick="showSection('macro')">Makroekonomi</button>
+<button class="nav-btn" onclick="showSection('onchain')">On-Chain</button>
+<button class="nav-btn" onclick="showSection('altcoins')">Altcoinler</button>
+<button class="nav-btn" onclick="showSection('insights')">İçgörüler</button>
+</div>
+
+<!-- OVERVIEW SECTION -->
+<div id="overview" class="section active">
+<div class="grid grid-4">
+<div class="card">
+<div class="card-header"><span class="card-title">Bitcoin</span><span class="badge">BTC</span></div>
+<div class="card-value" id="btc-price">$64,307</div>
+<div class="card-change change-up" id="btc-change">+1.15% (24s)</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">Ethereum</span><span class="badge">ETH</span></div>
+<div class="card-value" id="eth-price">$1,738</div>
+<div class="card-change change-up" id="eth-change">+1.63% (24s)</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">Solana</span><span class="badge">SOL</span></div>
+<div class="card-value" id="sol-price">$73.14</div>
+<div class="card-change change-up" id="sol-change">+4.83% (24s)</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">AVAX</span><span class="badge">AVAX</span></div>
+<div class="card-value" id="avax-price">$6.26</div>
+<div class="card-change change-up" id="avax-change">+5.21% (24s)</div>
+</div>
+</div>
+
+<div class="grid grid-2" style="margin-top:24px">
+<div class="card">
+<div class="card-header"><span class="card-title">Fear & Greed Index</span></div>
+<div class="fear-greed-container">
+<div class="fear-greed-label">Piyasa Duyarlılığı</div>
+<div class="fear-greed-value fear-greed-extreme-fear">23</div>
+<div class="fear-greed-label" style="color:var(--bear);font-weight:700">EXTREME FEAR</div>
+<div style="margin-top:16px;color:var(--text-muted);font-size:.85rem">
+Tarihsel olarak bu seviyeler dönüş noktası işaret etmiştir
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">Piyasa Özeti</span></div>
+<div class="metrics-grid">
+<div class="metric-item">
+<div class="metric-label">Toplam Piyasa</div>
+<div class="metric-value">$2.26T</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">BTC Dominans</div>
+<div class="metric-value">56.3%</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">24s Hacim</div>
+<div class="metric-value">$89B</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">Altcoin Season</div>
+<div class="metric-value" style="color:var(--bear)">25-35</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section-title">7 Günlük Fiyat Hareketi</div>
+<div class="card">
+<div class="chart-container chart-container-large">
+<canvas id="priceChart"></canvas>
+</div>
+</div>
+
+<div class="section-title">Top 10 Coin Performansı (24s)</div>
+<div class="card">
+<table class="table" id="coin-table">
+<thead><tr><th>Coin</th><th>Fiyat</th><th>24s Değişim</th><th>Hacim</th><th>RSI</th></tr></thead>
+<tbody id="coin-table-body"></tbody>
+</table>
+</div>
+</div>
+
+<!-- TECHNICAL SECTION -->
+<div id="technical" class="section">
+<div class="section-title">Bitcoin Teknik Seviyeler</div>
+<div class="card">
+<img src="assets/charts/btc_technical.png" alt="BTC Teknik Seviyeler" class="img-chart">
+</div>
+
+<div class="section-title">Piyasa Karşılaştırması</div>
+<div class="card">
+<img src="assets/charts/market_comparison.png" alt="Piyasa Karşılaştırması" class="img-chart">
+</div>
+
+<div class="section-title">MVRV Z-Score</div>
+<div class="card">
+<img src="assets/charts/mvrv_zscore.png" alt="MVRV Z-Score" class="img-chart">
+</div>
+</div>
+
+<!-- MACRO SECTION -->
+<div id="macro" class="section">
+<div class="section-title">Makroekonomik Göstergeler</div>
+<div class="card">
+<img src="assets/charts/makro.png" alt="Makroekonomik Göstergeler" class="img-chart">
+</div>
+
+<div class="grid grid-2" style="margin-top:24px">
+<div class="card">
+<div class="card-header"><span class="card-title">Fed Politikası</span></div>
+<div class="metrics-grid">
+<div class="metric-item">
+<div class="metric-label">Faiz Oranı</div>
+<div class="metric-value">3.50-3.75%</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">CPI</div>
+<div class="metric-value" style="color:var(--bear)">4.2%</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">DXY</div>
+<div class="metric-value">100.78</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">Rezasyon Riski</div>
+<div class="metric-value" style="color:var(--bear)">30-35%</div>
+</div>
+</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">ETF Akışları</span></div>
+<div class="metrics-grid">
+<div class="metric-item">
+<div class="metric-label">Kümülatif Giriş</div>
+<div class="metric-value" style="color:var(--bull)">$58.72B</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">Mayıs Çıkış</div>
+<div class="metric-value" style="color:var(--bear)">-$1.26B</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">IBIT Payı</div>
+<div class="metric-value">60-70%</div>
+</div>
+<div class="metric-item">
+<div class="metric-label">BTC Rezerv</div>
+<div class="metric-value">328K</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="section-title">Ülke BTC Rezervleri</div>
+<div class="card">
+<img src="assets/charts/ulke_btc.png" alt="Ülke BTC Rezervleri" class="img-chart">
+</div>
+</div>
+
+<!-- ON-CHAIN SECTION -->
+<div id="onchain" class="section">
+<div class="section-title">Hash Rate & Hashprice</div>
+<div class="card">
+<img src="assets/charts/hashrate_hashprice.png" alt="Hash Rate" class="img-chart">
+</div>
+
+<div class="section-title">On-Chain Metrikler</div>
+<div class="grid grid-3">
+<div class="card">
+<div class="card-header"><span class="card-title">Borsa Rezervleri</span></div>
+<div class="card-value" style="font-size:1.8rem">2.6M BTC</div>
+<div style="color:var(--bear);font-size:.9rem;margin-top:8px">8 yılın en düşüğü</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">Balina Birikimi</span></div>
+<div class="card-value" style="font-size:1.8rem;color:var(--bull)">+375K BTC</div>
+<div style="color:var(--text-muted);font-size:.9rem;margin-top:8px">30 günde</div>
+</div>
+<div class="card">
+<div class="card-header"><span class="card-title">MVRV Z-Score</span></div>
+<div class="card-value" style="font-size:1.8rem">2.43</div>
+<div style="color:var(--bull);font-size:.9rem;margin-top:8px">Düşük değerlenmiş bölge</div>
+</div>
+</div>
+
+<div class="section-title">Kurumsal BTC Dağılımı</div>
+<div class="card">
+<img src="assets/charts/kurumsal_btc.png" alt="Kurumsal BTC" class="img-chart">
+</div>
+</div>
+
+<!-- ALTCOINS SECTION -->
+<div id="altcoins" class="section">
+<div class="section-title">DeFi & RWA</div>
+<div class="card">
+<img src="assets/charts/defi_rwa.png" alt="DeFi RWA" class="img-chart">
+</div>
+
+<div class="section-title">Layer 2 & Altcoin Season</div>
+<div class="card">
+<img src="assets/charts/l2_altseason.png" alt="L2 Altcoin Season" class="img-chart">
+</div>
+
+<div class="section-title">Solana Ekosistemi</div>
+<div class="card">
+<img src="assets/charts/solana_tvl.png" alt="Solana TVL" class="img-chart">
+</div>
+</div>
+
+<!-- INSIGHTS SECTION -->
+<div id="insights" class="section">
+<div class="section-title">8 Stratejik İçgörü</div>
+
+<div class="insight-card">
+<div class="insight-title">1. "Mükemmel Fırtına" Dönüş Senaryosu</div>
+<div class="insight-text">5 faktörün konfluansı (Extreme Fear + Düşük Rezerv + Balina Birikimi + MVRV Dip + Stablecoin Rekor) = 2018/2022 benzeri dönüş potansiyeli. 13 klasik dip göstergesinden 4'ü tetiklendi.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">Orta Risk</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">2. Fed Volatilite Tetikleyicisi</div>
+<div class="insight-text">Piyasa-Fed beklenti ayrışması 16-17 Haziran FOMC'de patlayabilir. 9/18 üye 2026 sonuna kadar en az bir faiz artışı bekliyor.</div>
+<div style="margin-top:8px"><span class="tag tag-bear">Bearish</span><span class="tag tag-info">Yüksek Risk</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">3. BTC Dominans Zirvesi</div>
+<div class="insight-text">%56-57 BTC.D zirve sonrası 2-6 ayda altcoin sezonu başlayabilir (2026 Q3-Q4). Altcoin Season Index henüz 25-35.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">Altcoin</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">4. Solana Değer Fırsatı</div>
+<div class="insight-text">Fiyat %72 düşmüşken temeller sağlam. DeFi TVL $4.86B (sıralama #2). Firedancer benimsemesi %20+ validator oranına ulaştı.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">Value</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">5. Düzenleyici Bahar</div>
+<div class="insight-text">CLARITY Act + GENIUS Act + MiCA aynı dönemde (H2 2026). Gary Gensler → Paul Atkins geçişi. Coinbase/Kraken davaları düştü.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">Regülasyon</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">6. Sessiz Ralli</div>
+<div class="insight-text">Duygu diplerdeyken "quiet rally" başlayabilir (2019 benzeri). Death cross 204 gündür aktif - her seferinde lokal dip ile çakıştı.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">Tarihsel</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">7. Madenci Capitulation</div>
+<div class="insight-text">Hashprice 5 yılın dibinde ($34). Hash rate rekor (1,160 EH/s) ama marj sıkışması. Son satıcı sinyali yakın.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">On-Chain</span></div>
+</div>
+
+<div class="insight-card">
+<div class="insight-title">8. RWA+AI+DePIN Üçgeni</div>
+<div class="insight-text">Yeni hype merkezi. Yumo Yumo bu üçgende. RWA tokenizasyonu $30-35B (5x büyüme). AI kripto piyasa değeri $36B+.</div>
+<div style="margin-top:8px"><span class="tag tag-bull">Bullish</span><span class="tag tag-info">Yumo Yumo</span></div>
+</div>
+
+<div class="section-title" style="margin-top:40px">Senaryo Analizi</div>
+<div class="grid grid-3">
+<div class="card" style="border-left:4px solid var(--neutral)">
+<div class="card-header"><span class="card-title">Base Case</span></div>
+<div style="color:var(--text-muted);font-size:.9rem">Makro stabilizasyon + düzenleyici olumlu haberler</div>
+<div style="margin-top:12px;font-size:1.2rem;font-weight:700;color:var(--neutral)">Yavaş Yukarı Trend</div>
+</div>
+<div class="card" style="border-left:4px solid var(--bull)">
+<div class="card-header"><span class="card-title">Bull Case</span></div>
+<div style="color:var(--text-muted);font-size:.9rem">Fed pivot + CLARITY Act + kurumsal FOMO</div>
+<div style="margin-top:12px;font-size:1.2rem;font-weight:700;color:var(--bull)">Hızlı Ralli</div>
+</div>
+<div class="card" style="border-left:4px solid var(--bear)">
+<div class="card-header"><span class="card-title">Bear Case</span></div>
+<div style="color:var(--text-muted);font-size:.9rem">Enflasyon yükselişi + resesyon + düzenleyici aksama</div>
+<div style="margin-top:12px;font-size:1.2rem;font-weight:700;color:var(--bear)">Derin Düzeltme</div>
+</div>
+</div>
+</div>
+
+<footer>
+<p>YUMO Crypto Dashboard | Veriler CoinGecko, Binance, Alternative.me API'lerinden | Son Güncelleme: 21 Haziran 2026</p>
+<p style="margin-top:8px;font-size:.75rem">Bu dashboard eğitim ve araştırma amaçlıdır. Yatırım tavsiyesi değildir.</p>
+</footer>
+</div>
+
+<script>
+// Section navigation
+function showSection(id){
+ document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+ document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+ document.getElementById(id).classList.add('active');
+ event.target.classList.add('active');
+}
+
+// Coin data from CSV
+const coinData = [
+ {symbol:'BTC',name:'Bitcoin',price:64306.94,change:1.149,volume:606347569,rsi:47},
+ {symbol:'ETH',name:'Ethereum',price:1738.08,change:1.625,volume:271266734,rsi:27},
+ {symbol:'SOL',name:'Solana',price:73.14,change:4.83,volume:160237579,rsi:52},
+ {symbol:'AVAX',name:'Avalanche',price:6.259,change:5.211,volume:41059339,rsi:35},
+ {symbol:'BNB',name:'BNB',price:587.88,change:1.088,volume:47462511,rsi:45},
+ {symbol:'XRP',name:'XRP',price:1.1493,change:0.86,volume:50382716,rsi:42},
+ {symbol:'TRX',name:'Tron',price:0.3267,change:1.02,volume:43261649,rsi:38},
+ {symbol:'TAO',name:'Bittensor',price:230.5,change:0.787,volume:66840366,rsi:55},
+ {symbol:'NEAR',name:'NEAR',price:2.208,change:1.751,volume:24305901,rsi:48},
+ {symbol:'LINK',name:'Chainlink',price:7.969,change:1.001,volume:8162508,rsi:40},
+];
+
+// Populate table
+const tbody = document.getElementById('coin-table-body');
+coinData.forEach(c=>{
+ const tr = document.createElement('tr');
+ tr.innerHTML = `
+ <td><strong>${c.name}</strong> <span style="color:var(--text-muted)">${c.symbol}</span></td>
+ <td>$${c.price.toLocaleString()}</td>
+ <td style="color:${c.change>0?'var(--bull)':'var(--bear)'}">${c.change>0?'+':''}${c.change}%</td>
+ <td>$${(c.volume/1000000).toFixed(1)}M</td>
+ <td>${c.rsi}</td>
+ `;
+ tbody.appendChild(tr);
+});
+
+// 7-day price chart using CSV data
+const ctx = document.getElementById('priceChart').getContext('2d');
+const days = ['15 Haz','16 Haz','17 Haz','18 Haz','19 Haz','20 Haz','21 Haz'];
+const btcData = [65746,66329,65675,64509,62958,63544,64317];
+const ethData = [1726,1796,1793,1751,1711,1711,1741];
+const solData = [71.29,73.99,73.53,72.05,69.72,69.73,73.22];
+
+new Chart(ctx,{
+ type:'line',
+ data:{
+ labels:days,
+ datasets:[
+ {label:'BTC',data:btcData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',tension:.3,fill:true},
+ {label:'ETH',data:ethData,borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.1)',tension:.3,fill:true},
+ {label:'SOL',data:solData,borderColor:'#8b5cf6',backgroundColor:'rgba(139,92,246,.1)',tension:.3,fill:true}
+ ]
+ },
+ options:{
+ responsive:true,
+ maintainAspectRatio:false,
+ interaction:{intersect:false,mode:'index'},
+ plugins:{
+ legend:{labels:{color:'#e5e7eb'}},
+ tooltip:{backgroundColor:'#111827',titleColor:'#e5e7eb',bodyColor:'#e5e7eb',borderColor:'#1f2937',borderWidth:1}
+ },
+ scales:{
+ x:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9ca3af'}},
+ y:{grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#9ca3af'}}
+ }
+ }
+});
+</script>
+</body>
+</html>
