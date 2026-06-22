@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>YUMO Crypto Dashboard - 21 Haziran 2026</title>
+<title>YUMO Crypto Dashboard - 22 Haziran 2026</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
 :root{--bg:#0a0e1a;--card:#111827;--card-border:#1f2937;--text:#e5e7eb;--text-muted:#9ca3af;--accent:#6366f1;--accent2:#8b5cf6;--bull:#22c55e;--bear:#ef4444;--neutral:#f59e0b}
@@ -70,7 +70,7 @@ footer{text-align:center;padding:40px 0;color:var(--text-muted);font-size:.85rem
 <div class="header">
 <h1>YUMO Crypto Dashboard</h1>
 <div class="subtitle">Kripto Piyasa Makro-Mikro Analiz</div>
-<div class="date">21 Haziran 2026 | Veriler gerçek zamanlı</div>
+<div class="date">22 Haziran 2026 | Son Güncelleme: 18:50 UTC</div>
 </div>
 
 <div class="nav">
@@ -87,23 +87,23 @@ footer{text-align:center;padding:40px 0;color:var(--text-muted);font-size:.85rem
 <div class="grid grid-4">
 <div class="card">
 <div class="card-header"><span class="card-title">Bitcoin</span><span class="badge">BTC</span></div>
-<div class="card-value" id="btc-price">$64,307</div>
-<div class="card-change change-up" id="btc-change">+1.15% (24s)</div>
+<div class="card-value" id="btc-price">$64,057</div>
+<div class="card-change change-down" id="btc-change">-0.38% (24s)</div>
 </div>
 <div class="card">
 <div class="card-header"><span class="card-title">Ethereum</span><span class="badge">ETH</span></div>
-<div class="card-value" id="eth-price">$1,738</div>
-<div class="card-change change-up" id="eth-change">+1.63% (24s)</div>
+<div class="card-value" id="eth-price">$1,747</div>
+<div class="card-change change-up" id="eth-change">+0.90% (24s)</div>
 </div>
 <div class="card">
 <div class="card-header"><span class="card-title">Solana</span><span class="badge">SOL</span></div>
-<div class="card-value" id="sol-price">$73.14</div>
-<div class="card-change change-up" id="sol-change">+4.83% (24s)</div>
+<div class="card-value" id="sol-price">$73.69</div>
+<div class="card-change change-down" id="sol-change">-0.46% (24s)</div>
 </div>
 <div class="card">
 <div class="card-header"><span class="card-title">AVAX</span><span class="badge">AVAX</span></div>
-<div class="card-value" id="avax-price">$6.26</div>
-<div class="card-change change-up" id="avax-change">+5.21% (24s)</div>
+<div class="card-value" id="avax-price">$6.25</div>
+<div class="card-change change-down" id="avax-change">-0.88% (24s)</div>
 </div>
 </div>
 
@@ -112,7 +112,7 @@ footer{text-align:center;padding:40px 0;color:var(--text-muted);font-size:.85rem
 <div class="card-header"><span class="card-title">Fear & Greed Index</span></div>
 <div class="fear-greed-container">
 <div class="fear-greed-label">Piyasa Duyarlılığı</div>
-<div class="fear-greed-value fear-greed-extreme-fear">23</div>
+<div class="fear-greed-value fear-greed-extreme-fear">20</div>
 <div class="fear-greed-label" style="color:var(--bear);font-weight:700">EXTREME FEAR</div>
 <div style="margin-top:16px;color:var(--text-muted);font-size:.85rem">
 Tarihsel olarak bu seviyeler dönüş noktası işaret etmiştir
@@ -373,16 +373,16 @@ function showSection(id){
 
 // Coin data from CSV
 const coinData = [
- {symbol:'BTC',name:'Bitcoin',price:64306.94,change:1.149,volume:606347569,rsi:47},
- {symbol:'ETH',name:'Ethereum',price:1738.08,change:1.625,volume:271266734,rsi:27},
- {symbol:'SOL',name:'Solana',price:73.14,change:4.83,volume:160237579,rsi:52},
- {symbol:'AVAX',name:'Avalanche',price:6.259,change:5.211,volume:41059339,rsi:35},
- {symbol:'BNB',name:'BNB',price:587.88,change:1.088,volume:47462511,rsi:45},
- {symbol:'XRP',name:'XRP',price:1.1493,change:0.86,volume:50382716,rsi:42},
- {symbol:'TRX',name:'Tron',price:0.3267,change:1.02,volume:43261649,rsi:38},
- {symbol:'TAO',name:'Bittensor',price:230.5,change:0.787,volume:66840366,rsi:55},
- {symbol:'NEAR',name:'NEAR',price:2.208,change:1.751,volume:24305901,rsi:48},
- {symbol:'LINK',name:'Chainlink',price:7.969,change:1.001,volume:8162508,rsi:40},
+ {symbol:'BTC',name:'Bitcoin',price:64057,change:-0.38,volume:20609653885,rsi:47},
+ {symbol:'ETH',name:'Ethereum',price:1746.63,change:0.90,volume:11905257830,rsi:48},
+ {symbol:'SOL',name:'Solana',price:73.69,change:-0.46,volume:2252435201,rsi:50},
+ {symbol:'BNB',name:'BNB',price:591.28,change:0.29,volume:511433749,rsi:45},
+ {symbol:'XRP',name:'XRP',price:1.14,change:-1.27,volume:1292237584,rsi:42},
+ {symbol:'TRX',name:'TRON',price:0.33,change:1.31,volume:430655436,rsi:55},
+ {symbol:'TAO',name:'Bittensor',price:232.9,change:-1.15,volume:289043783,rsi:52},
+ {symbol:'LINK',name:'Chainlink',price:7.98,change:0.00,volume:170113822,rsi:40},
+ {symbol:'NEAR',name:'NEAR',price:2.14,change:-5.49,volume:252655573,rsi:35},
+ {symbol:'AVAX',name:'Avalanche',price:6.25,change:-0.88,volume:179459820,rsi:38},
 ];
 
 // Populate table
@@ -401,10 +401,10 @@ coinData.forEach(c=>{
 
 // 7-day price chart using CSV data
 const ctx = document.getElementById('priceChart').getContext('2d');
-const days = ['15 Haz','16 Haz','17 Haz','18 Haz','19 Haz','20 Haz','21 Haz'];
-const btcData = [65746,66329,65675,64509,62958,63544,64317];
-const ethData = [1726,1796,1793,1751,1711,1711,1741];
-const solData = [71.29,73.99,73.53,72.05,69.72,69.73,73.22];
+const days = ['16 Haz','17 Haz','18 Haz','19 Haz','20 Haz','21 Haz','22 Haz'];
+const btcData = [66329,65675,64509,62958,63544,64317,64057];
+const ethData = [1796,1793,1751,1711,1711,1741,1747];
+const solData = [73.99,73.53,72.05,69.72,69.73,73.22,73.69];
 
 new Chart(ctx,{
  type:'line',
